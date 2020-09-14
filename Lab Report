@@ -1,0 +1,188 @@
+# Stoplight
+Lab Report
+Objective
+The purposes of this lab are to: 
+• Learn to enumerate requirements from use cases and user stories
+ • Learn to utilize the general-purpose input/output (GPIO) pins on the Raspberry Pi to control LEDs.
+ • Learn to develop a minimum viable product and deliver new functionality through subsequent updates until the requirements are met, and all of the deliverables are acceptable.
+
+Materials
+Personal computer
+Raspberry Pi 4
+1 x Yellow LED
+1 x Red LED
+1 x Green LED
+1 x breadboard
+3 x 220 Ω Resistor (RRBlBlBr)
+Jumper Wires
+WiringPi Library
+Apache server Library
+PHP library
+
+References
+I used the following resources for this lab:
+https://iotdesignpro.com/projects/control-led-with-raspberry-pi-webserver-using-apache - This website provides a great tutorial on setting up a server to control LED lights using PHP from an Apache server.
+https://www.youtube.com/watch?v=BWYy3qZ315U&t=185s&ab_channel=O%27Reilly - Great video tutorial to understand how to manipulate correctly the resistors and the connections between the raspberry pi and breadboard
+https://www.raspberrypi.org/documentation/remote-access/web-server/apache.md - This website helped me understand how an Apache server works and the commands within the server.
+
+Procedures:
+Ensure connections are appropriate between the Raspberry Pi and the breadboard. 
+This system is a basic state machine, represented by the following picture:
+Upon startup, the machine will enter the state /index.php, which doesn’t change the state of any LED.
+While in the “LED ON” state:
+If the system receives an /on=ON command, the LED will change to “YELLOW LED ON” state.
+If the system receives an /ONR=ONR command, the LED will change to “RED LED ON” state.
+If the system receives an /ONG=ONG command, the LED will change to “GREEN LED ON” state.
+If the system receives an /Traffic=Traffic command, the LEDs will switch states among red, green, and yellow. 
+While in the “LED OFF” state:
+If the system receives an /off=OFF command, the LEDs will change to the “LED OFF” state 
+Update Raspbian libraries
+This step can be skipped if Raspbian libraries are already updated.
+If not use the following command: sudo apt-get update.
+Install git to the Raspberry so that we can copy libraries into the Raspberry Pi.
+Clone WiringPi using the git command and we install it using the build command.
+Install a web server:
+A user can install any server, but I used an apache server because of familiarity.
+Install the Apache library using the command:
+Sudo apt-get install apache2
+We test the Apache server: 
+We use the command ifconfig to find out our IP address, if we see the Apache server information displaying on the website, it means that the installation was successful.
+Install PHP in Raspberry Pi
+Use the command sudo apt-get install php libapache2-mod-php. This is so that we can edit php files within an Apache server environment.
+Remove the index.html using the command: sudo rm index.html.
+Create an index file using: sudo nano index.php.
+Test the index.php file using dummy code.
+Once the index.php works correctly, we can start coding using PHP.
+
+Thought Questions
+1. What language did you choose for implementing this project? Why? 
+
+In this lab, I used PHP because it is widely available on the internet. It was easy to configure in the Apache server and also it was easy to configure the LED lights with it.
+
+2. What is the purpose of the resistor in this simple circuit? What would happen if you omitted it? 
+Resistors are used in this circuit as a way to limit the amount of electricity. Otherwise, I can damage my Raspberry Pi.
+
+3. What are practical applications of this device? What enhancements or modifications would you make?
+
+I think I can see potential in using this device because I now know how to set up a webserver and connect it successfully to the Raspberry Pi. I think a modification that I will do might be add a camera or a sensor. 
+
+ 4. Please estimate the total time you spent on this lab and report
+
+My estimate was 5 hours, but I somehow messed up the Apache server and it took me 7 hours on it to figure out the reason behind the bug. I needed to restart the Apache server. In total, it took me between 12-14 hours.
+
+Certification of Work
+
+I certify that the solution presented in this lab represents my own work. In the case where I have borrowed code or ideas from another person, I have provided a link to the author’s work in the references, and included a citation in the comments of my code.
+									-- Paolo Poemape
+
+
+Appendix 1: System Interface- Web Page
+State: startup
+
+
+
+State: /index.php?on=ON (Yellow LED is on)
+
+
+State: /index.php?ONR=ONR (Red LED  is on)
+
+
+State: /index.php?ONG=ONG (Green LED is on)
+
+
+
+
+State: /index.php?off=OFF
+
+
+
+
+
+
+Appendix: PHP Code
+
+Link to my repository:	
+
+https://github.com/paolopoemape/Stoplight/blob/master/code
+
+<html>
+
+<form method="get" action="index.php">
+        <input type="submit" style ="font-size: 14 pt" value="OFF" name="off">
+        <input type="submit" style = "font-size: 14 pt" value= "ON" name="on">
+        <input type="submit" style ="font-size: 14 pt" value= "ONR" name ="ONR">
+        <input type="submit" style ="font-size: 14 pt" value="ONG" name= "ONG">
+        <input type="submit" style="font-size: 14 pt" value="Traffic" name="Traffic">
+
+</form>
+
+<?php
+        shell_exec("/usr/local/bin/gpio -g mode 3 out");
+        shell_exec("/usr/local/bin/gpio -g mode 18 out");
+        shell_exec("/usr/local/bin/gpio -g mode 21 out");
+
+        if(isset($_GET['off']))
+                {
+                        shell_exec("/usr/local/bin/gpio -g write 3 0");
+                        shell_exec("/usr/local/bin/gpio -g write 18 0");
+                        shell_exec("/usr/local/bin/gpio -g write 21 0");
+                        //echo "<meta http-equiv ='refresh' content='/index.php?off=OFF';URL=index.php>";
+                }
+
+        else if(isset($_GET['on']))
+                {
+
+                        shell_exec("/usr/local/bin/gpio -g write 3 1");
+                }
+
+        else if (isset($_GET['ONR']))
+                {
+shell_exec("/usr/local/bin/gpio -g write 18 1");
+                }
+
+        else if (isset($_GET['ONG']))
+                {
+                        shell_exec("/usr/local/bin/gpio -g write 21 1");
+                }
+
+        else if(isset($_GET['REDLIGHT']))
+                {       shell_exec("/usr/local/bin/gpio -g write 3 0");
+                        shell_exec("/usr/local/bin/gpio -g write 18 1");
+                        echo "<meta http-equiv= 'refresh' content='5; url=index.php?GREENLIGHT'>";
+                }
+        else if(isset($_GET['GREENLIGHT']))
+
+  {
+                        shell_exec("/usr/local/bin/gpio -g write 18 0");
+                        shell_exec("/usr/local/bin/gpio -g write 21 1");
+                        echo "<meta http-equiv= 'refresh' content= '3; url=index.php?YELLOWLIGHT'>";
+                }
+
+        else if(isset($_GET['YELLOWLIGHT']))
+                {
+                        shell_exec("/usr/local/bin/gpio -g write 21 0");
+                        shell_exec("/usr/local/bin/gpio -g write 3 1");
+                        echo "<meta http-equiv= 'refresh' content= '5; url= index.php?REDLIGHT'>";
+
+                }
+
+        else if(isset($_GET['Traffic']))
+
+{
+
+
+
+                        echo "<meta http-equiv='refresh' content='1; url=index.php?REDLIGHT'>";         
+                        echo "<meta http-equiv='refresh' content= '6; url=index.php?ONG=ONG'>"; 
+              
+                     
+                } 
+
+
+
+?>
+
+</html>
+
+
+
