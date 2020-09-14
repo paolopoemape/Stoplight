@@ -1,0 +1,82 @@
+
+<html>
+
+<form method="get" action="index.php">
+        <input type="submit" style ="font-size: 14 pt" value="OFF" name="off">
+        <input type="submit" style = "font-size: 14 pt" value= "ON" name="on">
+        <input type="submit" style ="font-size: 14 pt" value= "ONR" name ="ONR">
+        <input type="submit" style ="font-size: 14 pt" value="ONG" name= "ONG">
+        <input type="submit" style="font-size: 14 pt" value="Traffic" name="Traffic">
+
+</form>
+
+<?php
+        shell_exec("/usr/local/bin/gpio -g mode 3 out");
+        shell_exec("/usr/local/bin/gpio -g mode 18 out");
+        shell_exec("/usr/local/bin/gpio -g mode 21 out");
+
+        if(isset($_GET['off']))
+                {
+                        shell_exec("/usr/local/bin/gpio -g write 3 0");
+                        shell_exec("/usr/local/bin/gpio -g write 18 0");
+                        shell_exec("/usr/local/bin/gpio -g write 21 0");
+                        //echo "<meta http-equiv ='refresh' content='/index.php?off=OFF';URL=index.php>";
+                }
+
+        else if(isset($_GET['on']))
+                {
+
+                        shell_exec("/usr/local/bin/gpio -g write 3 1");
+                }
+
+        else if (isset($_GET['ONR']))
+                {
+shell_exec("/usr/local/bin/gpio -g write 18 1");
+                }
+
+        else if (isset($_GET['ONG']))
+                {
+                        shell_exec("/usr/local/bin/gpio -g write 21 1");
+                }
+
+        else if(isset($_GET['REDLIGHT']))
+                {       shell_exec("/usr/local/bin/gpio -g write 3 0");
+                        shell_exec("/usr/local/bin/gpio -g write 18 1");
+                        echo "<meta http-equiv= 'refresh' content='5; url=index.php?GREENLIGHT'>";
+                }
+        else if(isset($_GET['GREENLIGHT']))
+
+  {
+                        shell_exec("/usr/local/bin/gpio -g write 18 0");
+                        shell_exec("/usr/local/bin/gpio -g write 21 1");
+                        echo "<meta http-equiv= 'refresh' content= '3; url=index.php?YELLOWLIGHT'>";
+                }
+
+        else if(isset($_GET['YELLOWLIGHT']))
+                {
+                        shell_exec("/usr/local/bin/gpio -g write 21 0");
+                        shell_exec("/usr/local/bin/gpio -g write 3 1");
+                        echo "<meta http-equiv= 'refresh' content= '5; url= index.php?REDLIGHT'>";
+
+                }
+
+        else if(isset($_GET['Traffic']))
+
+{
+
+
+
+                        echo "<meta http-equiv='refresh' content='1; url=index.php?REDLIGHT'>";         
+                        echo "<meta http-equiv='refresh' content= '6; url=index.php?ONG=ONG'>"; 
+              
+                     
+                } 
+
+
+
+?>
+
+</html>
+
+
+
